@@ -76,6 +76,16 @@ else
   echo "WARNING: DD_HOSTNAME is deprecated. Setting this environment variable may result in metrics errors. To remove it, run: heroku config:unset DD_HOSTNAME"
 fi
 
+# Include application's datadog configs
+APP_DATADOG_DIR="/app/datadog"
+
+for file in "$APP_DATADOG_DIR"/*.yaml; do
+  filename=$(basename -- "$file")
+  filename="${filename%.*}"
+  mkdir -p "$DD_CONF_DIR/conf.d/${filename}.d"
+  cp $file "$DD_CONF_DIR/conf.d/${filename}.d/conf.yml"
+done
+
 if [ -n "$DISABLE_DATADOG_AGENT" ]; then
   echo "The Datadog Agent has been disabled. Unset the DISABLE_DATADOG_AGENT or set missing environment variables."
 else
